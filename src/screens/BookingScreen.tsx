@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { BookingRepository } from '../BookingRepository';
 import { Training } from '../Training';
+import { validateName, validatePhone, validateDate } from '../validators';
 
 const bookingRepo = new BookingRepository();
 
@@ -24,7 +25,17 @@ export default function BookingScreen({ route, navigation }: any) {
 
     const handleAction = async () => {
         if (!clientName || clientName.length < 2) {
-            Alert.alert('Помилка', "Введіть ім'я");
+            Alert.alert("Введіть ім'я");
+            return;
+        }
+
+        if (!validatePhone(clientPhone)) {
+            Alert.alert('Номер має містити мінімум 10 цифр');
+            return;
+        }
+
+        if (!validateDate(bookingDate)) {
+            Alert.alert('Не коректна дата (РРРР-ММ-ДД)');
             return;
         }
 
@@ -35,7 +46,7 @@ export default function BookingScreen({ route, navigation }: any) {
                     client_phone: clientPhone,
                     booking_date: bookingDate
                 });
-                Alert.alert('Успішно', 'Дані оновлено!');
+                Alert.alert('Дані оновлено!');
             } else {
                 await bookingRepo.create({
                     training_id: training.id!,
@@ -44,12 +55,22 @@ export default function BookingScreen({ route, navigation }: any) {
                     booking_date: bookingDate,
                     status: 'active'
                 });
-                Alert.alert('Успішно', 'Ви записані!');
+                Alert.alert('Ви записані!');
             }
             navigation.goBack();
         } catch (error: any) {
-            Alert.alert('Помилка', 'Не вдалося зберегти дані');
+            Alert.alert('Не вдалося зберегти дані');
         }
+    };
+
+    const handleNameChange = (text: string) => {
+        const cleaned = text.replace(/\d/g, '');
+        setClientName(cleaned);
+    };
+
+    const handlePhoneChange = (text: string) => {
+        const cleaned = text.replace(/\D/g, '');
+        setClientPhone(cleaned);
     };
 
     return (
@@ -71,14 +92,14 @@ export default function BookingScreen({ route, navigation }: any) {
                 <TextInput
                     style={styles.input}
                     value={clientName}
-                    onChangeText={setClientName}
+                    onChangeText={handleNameChange}
                 />
 
                 <Text style={styles.label}>Номер телефону:</Text>
                 <TextInput
                     style={styles.input}
                     value={clientPhone}
-                    onChangeText={setClientPhone}
+                     onChangeText={handlePhoneChange}
                     keyboardType="phone-pad"
                 />
 
