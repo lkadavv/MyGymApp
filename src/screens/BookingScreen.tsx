@@ -9,28 +9,29 @@ import {
     ScrollView
 } from 'react-native';
 import { BookingRepository } from '../BookingRepository';
-import { Training } from '../Training';
 import { validateName, validatePhone, validateDate } from '../validators';
 
 const bookingRepo = new BookingRepository();
 
 export default function BookingScreen({ route, navigation }: any) {
     const { training, existingBooking } = route.params || {};
-
+    const [clientPhone, setClientPhone] = useState(() => {
+        const phone = existingBooking?.client_phone || '';
+        return phone; 
+    });
     const [clientName, setClientName] = useState(existingBooking?.client_name || '');
-    const [clientPhone, setClientPhone] = useState(existingBooking?.client_phone || '');
     const [bookingDate, setBookingDate] = useState(
         existingBooking?.booking_date || new Date().toISOString().split('T')[0]
     );
 
     const handleAction = async () => {
-        if (!clientName || clientName.length < 2) {
+        if (!validateName(clientName)) {
             Alert.alert("Введіть ім'я");
             return;
         }
 
         if (!validatePhone(clientPhone)) {
-            Alert.alert('Номер має містити мінімум 10 цифр');
+            Alert.alert('Номер має містити 9 цифр');
             return;
         }
 
@@ -53,13 +54,12 @@ export default function BookingScreen({ route, navigation }: any) {
                     client_name: clientName,
                     client_phone: clientPhone,
                     booking_date: bookingDate,
-                    status: 'active'
                 });
                 Alert.alert('Ви записані!');
             }
             navigation.goBack();
         } catch (error: any) {
-            Alert.alert('Не вдалося зберегти дані');
+            Alert.alert('Немає місць');
         }
     };
 
@@ -94,14 +94,19 @@ export default function BookingScreen({ route, navigation }: any) {
                     value={clientName}
                     onChangeText={handleNameChange}
                 />
+                
 
-                <Text style={styles.label}>Номер телефону:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={clientPhone}
-                     onChangeText={handlePhoneChange}
-                    keyboardType="phone-pad"
-                />
+            <Text style={styles.label}>Номер телефону:</Text>
+                <View style={styles.phoneContainer}>
+                    <Text style={styles.phoneCode}>+380</Text>
+                    <TextInput
+                        style={styles.phoneInput}
+                        value={clientPhone}
+                        onChangeText={handlePhoneChange}
+                        keyboardType="phone-pad"
+                        maxLength={9}
+                    />
+                </View>
 
                 <Text style={styles.label}>Дата тренування:</Text>
                 <TextInput
@@ -121,15 +126,88 @@ export default function BookingScreen({ route, navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f5f5f5' },
-    card: { backgroundColor: '#fff', margin: 15, padding: 20, borderRadius: 12, alignItems: 'center' },
-    trainingName: { fontSize: 24, fontWeight: 'bold', color: '#333' },
-    price: { fontSize: 20, fontWeight: 'bold', color: '#4CAF50', marginVertical: 5 },
-    time: { fontSize: 18, color: '#666' },
-    form: { backgroundColor: '#fff', margin: 15, padding: 20, borderRadius: 12 },
-    title: { fontSize: 20, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
-    label: { fontSize: 14, fontWeight: 'bold', color: '#333', marginBottom: 5 },
-    input: { borderWidth: 1, borderColor: '#ddd', padding: 10, borderRadius: 8, marginBottom: 15 },
-    bookButton: { backgroundColor: '#4CAF50', padding: 15, borderRadius: 8, alignItems: 'center' },
-    bookButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+    container: {
+        flex: 1, 
+        backgroundColor: 'white' 
+    },
+    card: { 
+        margin: 15, 
+        padding: 20, 
+        borderRadius: 12, 
+        alignItems: 'center' 
+    },
+    trainingName: { 
+        fontSize: 24, 
+        fontWeight: 'bold', 
+        color: '#333' 
+    },
+    price: { 
+        fontSize: 20, 
+        fontWeight: 'bold', 
+        color: '#6d9efc', 
+        marginVertical: 5 
+    },
+    time: { 
+        fontSize: 18,
+         color: '#666' 
+        },
+    form: { 
+        backgroundColor: '#fff', 
+        margin: 15, 
+        padding: 20, 
+        borderRadius: 12 },
+    title: { 
+        fontSize: 20, 
+        fontWeight: 'bold', 
+        marginBottom: 15, 
+        textAlign: 'center' },
+    label: 
+    { 
+        fontSize: 14, 
+        fontWeight: 'bold', 
+        color: '#333', 
+        marginBottom: 5 
+    },
+    input: {
+        borderWidth: 1, 
+        borderColor: '#ddd', 
+        padding: 10, 
+        borderRadius: 8, 
+        marginBottom: 15 
+    },
+    bookButton: { 
+        backgroundColor: '#6d9efc', 
+        padding: 15, 
+        borderRadius: 8, 
+        alignItems: 'center' 
+    },
+    bookButtonText: { 
+        color: '#fff', 
+        fontSize: 18, 
+        fontWeight: 'bold' 
+    },
+    phoneContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        marginBottom: 15,
+        backgroundColor: '#fff',
+    },
+    phoneCode: {
+        fontSize: 16,
+        padding: 10,
+        backgroundColor: '#f0f0f0',
+        borderRightWidth: 1,
+        borderRightColor: '#ddd',
+        borderTopLeftRadius: 8,
+        borderBottomLeftRadius: 8,
+        fontWeight: 'bold',
+    },
+    phoneInput: {
+        flex: 1,
+        padding: 10,
+        fontSize: 16,
+    },
 });

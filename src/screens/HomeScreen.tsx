@@ -40,7 +40,7 @@ export default function HomeScreen({ navigation }: any) {
                     onPress={() => navigation.navigate('MyBookings')}
                     style={styles.iconButton}
                 >
-                    <Text style={styles.iconText}>📋</Text>
+                    <Text style={styles.iconText}>📖</Text>
                 </TouchableOpacity>
             </View>
 
@@ -77,7 +77,7 @@ export default function HomeScreen({ navigation }: any) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: 'white',
     },
     header: {
         flexDirection: 'row',
@@ -85,13 +85,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#fff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
     },
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#4CAF50',
+        color: '#6d9efc',
     },
     iconButton: {
         padding: 10,
@@ -100,15 +98,14 @@ const styles = StyleSheet.create({
         fontSize: 28,
     },
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: 'white',
         margin: 15,
         padding: 20,
         borderRadius: 12,
-        shadowColor: '#000',
+        shadowColor: 'black',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.3,
         shadowRadius: 4,
-        elevation: 3,
     },
     cardHeader: {
         flexDirection: 'row',
@@ -127,7 +124,7 @@ const styles = StyleSheet.create({
     price: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#4CAF50',
+        color: '#6d9efc',
         marginBottom: 10,
     },
     time: {
@@ -149,7 +146,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     bookButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#6d9efc',
         padding: 12,
         borderRadius: 8,
         alignItems: 'center',

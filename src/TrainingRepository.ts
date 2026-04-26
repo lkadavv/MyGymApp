@@ -1,6 +1,5 @@
 import * as SQLite from 'expo-sqlite';
 import { Training } from './Training';
-import { Booking } from './Booking';
 
 export class TrainingRepository {
     async getAll(): Promise<Training[]> {

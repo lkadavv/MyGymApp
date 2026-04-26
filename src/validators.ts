@@ -5,13 +5,13 @@ export const validateName = (value: string): boolean => {
 };
 
 export const validatePhone = (value: string): boolean => {
-    const digits = value.replace(/\\D/g, '');
-    return digits.length >= 10 && digits.length <= 15;
+    const digits = value.replace(/\D/g, '');
+    return digits.length == 9;
 };
 
 export const validateDate = (value: string): boolean => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-    
+
     const [year, month, day] = value.split('-').map(Number);
     if (month < 1 || month > 12) return false;
 
@@ -25,25 +25,4 @@ export const validateDate = (value: string): boolean => {
     today.setHours(0, 0, 0, 0);
     
     return selectedDate >= today;
-};
-
-export const formatPhoneNumber = (code: string, digits: string): string => {
-    let formatted = '';
-    
-    if (code === '+380') {
-        if (digits.length > 0) formatted += digits.substring(0, 2);
-        if (digits.length > 2) formatted += ' ' + digits.substring(2, 5);
-        if (digits.length > 5) formatted += ' ' + digits.substring(5, 7);
-        if (digits.length > 7) formatted += ' ' + digits.substring(7, 9);
-    } else if (code === '+1') { 
-        if (digits.length > 0) formatted += digits.substring(0, 3);
-        if (digits.length > 3) formatted += ' ' + digits.substring(3, 6);
-        if (digits.length > 6) formatted += ' ' + digits.substring(6, 10);
-    } else {
-        if (digits.length > 0) formatted += digits.substring(0, 3);
-        if (digits.length > 3) formatted += ' ' + digits.substring(3, 6);
-        if (digits.length > 6) formatted += ' ' + digits.substring(6, 9);
-    }
-    
-    return formatted;
 };

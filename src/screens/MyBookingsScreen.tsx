@@ -9,12 +9,12 @@ import {
     RefreshControl
 } from 'react-native';
 import { BookingRepository } from '../BookingRepository';
-import { BookingWithTraining } from '../Booking';
+import { Booking} from '../Booking';
 
 const bookingRepo = new BookingRepository();
 
 export default function MyBookingsScreen({ navigation }: any) {
-    const [bookings, setBookings] = useState<BookingWithTraining[]>([]);
+    const [bookings, setBookings] = useState<Booking[]>([]);
     const [refreshing, setRefreshing] = useState(false);
 
     const loadBookings = async () => {
@@ -28,17 +28,25 @@ export default function MyBookingsScreen({ navigation }: any) {
     }, [navigation]);
 
     const handleCancel = (id: number, trainingName: string) => {
+        console.log('Спроба видалити ID:', id); 
+        
         Alert.alert(
             'Бажаєте скасувати запис?',
-            'Безкоштовне скасування можливе за 24 години.',
+            `Запис на ${trainingName} буде видалений`,
             [
                 { text: 'Ні', style: 'cancel' },
                 {
                     text: 'Так, скасувати',
                     onPress: async () => {
-                        await bookingRepo.cancelBooking(id);
-                        loadBookings();
-                        Alert.alert('Успішно', `Запис на ${trainingName} скасовано`);
+                        try {
+                            console.log('Видаляємо ID:', id);
+                            await bookingRepo.delete(id);
+                            await loadBookings(); 
+                            Alert.alert('Успішно', `Запис на ${trainingName} скасовано`);
+                        } catch (error) {
+                            console.error('Помилка видалення:', error);
+                            Alert.alert('Помилка', 'Не вдалося скасувати запис');
+                        }
                     }
                 }
             ]
@@ -50,32 +58,14 @@ export default function MyBookingsScreen({ navigation }: any) {
     };
     
 
-    const handleDelete = (id: number, trainingName: string) => {
-        Alert.alert(
-            'Видалити запис?',
-            `Запис на ${trainingName} буде видалено назавжди.`,
-            [
-                { text: 'Скасувати', style: 'cancel' },
-                {
-                    text: 'Видалити',
-                    style: 'destructive',
-                    onPress: async () => {
-                        await bookingRepo.delete(id);
-                        loadBookings();
-                        Alert.alert('Успішно', 'Запис видалено');
-                    }
-                }
-            ]
-        );
-    };
-
-    const renderItem = ({ item }: { item: BookingWithTraining }) => (
+    const renderItem = ({ item }: { item: Booking }) => (
         <View style={styles.card}>
             <Text style={styles.trainingName}>{item.training_name}</Text>
             <Text style={styles.date}>
                 {item.booking_date}, {item.time} </Text>
             <Text style={styles.price}>{item.price} грн</Text>
             <Text style={styles.trainer}>{item.trainer_name} тренер</Text>
+            <Text style={styles.clientName}>{item.client_name}</Text>
             
             <View style={styles.buttonContainer}>
                 <TouchableOpacity 
@@ -90,13 +80,6 @@ export default function MyBookingsScreen({ navigation }: any) {
                     onPress={() => handleCancel(item.id!, item.training_name || '')}
                 >
                     <Text style={styles.buttonText}>Скасувати</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                    style={[styles.button, styles.deleteButton]}
-                    onPress={() => handleDelete(item.id!, item.training_name || '')}
-                >
-                    <Text style={styles.buttonText}>Видалити</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -146,44 +129,46 @@ const styles = StyleSheet.create({
     trainingName: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#333',
+        color: 'black',
         marginBottom: 10,
+    },
+    clientName: {
+        fontSize: 14,
+        color: '#646f77',
+        marginBottom: 15,
     },
     date: {
         fontSize: 14,
-        color: '#666',
+        color: '#646f77',
         marginBottom: 5,
     },
     price: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#4CAF50',
+        color: '#6d9efc',
         marginBottom: 10,
     },
     trainer: {
         fontSize: 14,
-        color: '#999',
+        color: '#646f77',
         marginBottom: 15,
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        gap: 10,
+        gap: 5,
     },
     button: {
         flex: 1,
-        padding: 10,
+        padding: 12,
         borderRadius: 8,
         alignItems: 'center',
     },
     editButton: {
-        backgroundColor: '#2196F3',
+        backgroundColor: '#6d9efc',
     },
     cancelButton: {
-        backgroundColor: '#FF9800',
-    },
-    deleteButton: {
-        backgroundColor: '#f44336',
+        backgroundColor: '#646f77',
     },
     buttonText: {
         color: '#fff',
@@ -201,7 +186,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     bookButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#007FFF',
         padding: 15,
         borderRadius: 8,
         alignItems: 'center',
