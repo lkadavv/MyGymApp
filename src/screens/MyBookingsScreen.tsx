@@ -6,7 +6,6 @@ import {
     FlatList,
     TouchableOpacity,
     Alert,
-    RefreshControl
 } from 'react-native';
 import { BookingRepository } from '../BookingRepository';
 import { Booking} from '../Booking';
@@ -15,7 +14,6 @@ const bookingRepo = new BookingRepository();
 
 export default function MyBookingsScreen({ navigation }: any) {
     const [bookings, setBookings] = useState<Booking[]>([]);
-    const [refreshing, setRefreshing] = useState(false);
 
     const loadBookings = async () => {
         const data = await bookingRepo.getAll();
@@ -23,6 +21,7 @@ export default function MyBookingsScreen({ navigation }: any) {
     };
 
     useEffect(() => {
+        loadBookings(); 
         const unsubscribe = navigation.addListener('focus', loadBookings);
         return unsubscribe;
     }, [navigation]);
@@ -91,9 +90,6 @@ export default function MyBookingsScreen({ navigation }: any) {
                 data={bookings}
                 keyExtractor={(item) => item.id!.toString()}
                 renderItem={renderItem}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={loadBookings} />
-                }
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
                         <Text style={styles.emptyText}>Немає активних записів</Text>

@@ -17,37 +17,6 @@ export class BookingRepository {
         `);
     }
 
-    async getById(id: number): Promise<Booking | null> {
-        const db = await SQLite.openDatabaseAsync('fitbook.db');
-        const result = await db.getAllAsync<Booking>(`
-            SELECT 
-                b.*,
-                t.name as training_name,
-                t.trainer_name,
-                t.price,
-                t.time
-            FROM bookings b
-            JOIN trainings t ON b.training_id = t.id
-            WHERE b.id = ?
-        `, [id]);
-        return result.length > 0 ? result[0] : null;
-    }
-
-    async getByClient(phone: string): Promise<Booking[]> {
-        const db = await SQLite.openDatabaseAsync('fitbook.db');
-        return await db.getAllAsync<Booking>(`
-            SELECT 
-                b.*,
-                t.name as training_name,
-                t.trainer_name,
-                t.price,
-                t.time
-            FROM bookings b
-            JOIN trainings t ON b.training_id = t.id
-            WHERE b.client_phone = ?
-            ORDER BY b.booking_date DESC
-        `, [phone]);
-    }
     async create(booking: Booking): Promise<void> {
         const db = await SQLite.openDatabaseAsync('fitbook.db');
         

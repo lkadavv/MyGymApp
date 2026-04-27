@@ -15,10 +15,7 @@ const bookingRepo = new BookingRepository();
 
 export default function BookingScreen({ route, navigation }: any) {
     const { training, existingBooking } = route.params || {};
-    const [clientPhone, setClientPhone] = useState(() => {
-        const phone = existingBooking?.client_phone || '';
-        return phone; 
-    });
+    const [clientPhone, setClientPhone] = useState(existingBooking?.client_phone || '');
     const [clientName, setClientName] = useState(existingBooking?.client_name || '');
     const [bookingDate, setBookingDate] = useState(
         existingBooking?.booking_date || new Date().toISOString().split('T')[0]

@@ -5,7 +5,6 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    RefreshControl
 } from 'react-native';
 import { TrainingRepository } from '../TrainingRepository';
 import { Training } from '../Training';
@@ -14,7 +13,6 @@ const trainingRepo = new TrainingRepository();
 
 export default function HomeScreen({ navigation }: any) {
     const [trainings, setTrainings] = useState<Training[]>([]);
-    const [refreshing, setRefreshing] = useState(false);
 
     const loadTrainings = async () => {
         const data = await trainingRepo.getAll();
@@ -28,12 +26,7 @@ export default function HomeScreen({ navigation }: any) {
     }, [navigation]);
 
     return (
-        <ScrollView 
-            style={styles.container}
-            refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={loadTrainings} />
-            }
-        >
+        <ScrollView>
             <View style={styles.header}>
                 <Text style={styles.title}>FitBook</Text>
                 <TouchableOpacity 
@@ -56,6 +49,7 @@ export default function HomeScreen({ navigation }: any) {
                     <Text style={styles.price}>{training.price} грн</Text>
                     
                     <Text style={styles.time}>{training.time}</Text>
+                    <Text style={styles.trainerLabel}>{training.max_capacity} - макс. кількість людей</Text>
                     
                     <View style={styles.trainerContainer}>
                         <Text style={styles.trainerLabel}>тренер</Text>
