@@ -6,6 +6,8 @@ import HomeScreen from './src/screens/HomeScreen';
 import BookingScreen from './src/screens/BookingScreen';
 import MyBookingsScreen from './src/screens/MyBookingsScreen';
 import { View, Text, ActivityIndicator } from 'react-native';
+import LoginScreen from './src/screens/LoginScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
 
 const Stack = createStackNavigator();
 
@@ -29,11 +31,21 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen} 
+          options={{ title: 'Вхід', headerLeft: () => null }} // headerLeft: () => null прибере кнопку "назад"
+        />
+        <Stack.Screen 
+          name="Register" 
+          component={RegisterScreen} 
+          options={{ title: 'Реєстрація' }} 
+        />
         <Stack.Screen 
           name="Home" 
           component={HomeScreen} 
-          options={{ title: 'FitBook', headerTitleStyle: { fontWeight: 'bold' } }}
+          options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="Booking" 

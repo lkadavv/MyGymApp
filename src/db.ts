@@ -4,6 +4,14 @@ export const initDatabase = async () => {
     const db = await SQLite.openDatabaseAsync('fitbook.db');
     
     await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT NOT NULL UNIQUE, 
+        password TEXT NOT NULL
+    );
+    `);
+
+    await db.execAsync(`
         CREATE TABLE IF NOT EXISTS trainings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL UNIQUE,

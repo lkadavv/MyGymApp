@@ -5,14 +5,19 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
 import { TrainingRepository } from '../TrainingRepository';
 import { Training } from '../Training';
 
 const trainingRepo = new TrainingRepository();
 
-export default function HomeScreen({ navigation }: any) {
+export default function HomeScreen({ navigation, route }: any) {
     const [trainings, setTrainings] = useState<Training[]>([]);
+    
+    // Отримуємо статус авторизації з параметрів навігації
+    // Якщо route.params?.isLoggedIn існує, беремо його, інакше false
+    const isLoggedIn = route.params?.isLoggedIn ?? false;
 
     const loadTrainings = async () => {
         const data = await trainingRepo.getAll();
@@ -25,18 +30,56 @@ export default function HomeScreen({ navigation }: any) {
         return unsubscribe;
     }, [navigation]);
 
+    const handleAuthIconPress = () => {
+        if (isLoggedIn) {
+            Alert.alert(
+                "Вихід",
+                "Ви впевнені, що хочете вийти з акаунту?",
+                [
+                    { text: "Скасувати", style: "cancel" },
+                    { 
+                        text: "Вийти", 
+                        onPress: () => {
+                            // Використовуємо replace, щоб повністю вийти з контексту Home
+                            navigation.replace('Login'); 
+                        } 
+                    }
+                ]
+            );
+        } else {
+            navigation.navigate('Login');
+        }
+    };
+
     return (
-        <ScrollView>
+        <ScrollView style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>FitBook</Text>
-                <TouchableOpacity 
-                    onPress={() => navigation.navigate('MyBookings')}
-                    style={styles.iconButton}
-                >
-                    <Text style={styles.iconText}>📖</Text>
-                </TouchableOpacity>
+                
+                <View style={styles.rightHeaderContainer}>
+                    {/* КНИЖКА: показується тільки якщо залогінений */}
+                    {isLoggedIn && (
+                        <TouchableOpacity 
+                            onPress={() => navigation.navigate('MyBookings')}
+                            style={styles.iconButton}
+                        >
+                            <Text style={styles.iconText}>📖</Text>
+                        </TouchableOpacity>
+                    )}
+
+                    {/* ЕМБЛЕМА КОРИСТУВАЧА / ВИХІД */}
+                    <TouchableOpacity 
+                        onPress={handleAuthIconPress}
+                        style={styles.iconButton}
+                    >
+                        <Text style={styles.iconText}>
+                            {isLoggedIn ? '🚪' : '👤'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
+            {/* СПИСОК ТРЕНУВАНЬ (завжди видимий) */}
             {trainings.map((training) => (
                 <TouchableOpacity
                     key={training.id}
@@ -47,7 +90,6 @@ export default function HomeScreen({ navigation }: any) {
                     </View>
                     
                     <Text style={styles.price}>{training.price} грн</Text>
-                    
                     <Text style={styles.time}>{training.time}</Text>
                     <Text style={styles.trainerLabel}>{training.max_capacity} - макс. кількість людей</Text>
                     
@@ -56,11 +98,18 @@ export default function HomeScreen({ navigation }: any) {
                         <Text style={styles.trainerName}>{training.trainer_name}</Text>
                     </View>
                     
-                    <TouchableOpacity style={styles.bookButton}
-                    onPress={() => navigation.navigate('Booking', { training })}>
-
+                    <TouchableOpacity 
+                        style={styles.bookButton}
+                        onPress={() => {
+                            if (isLoggedIn) {
+                                navigation.navigate('Booking', { training });
+                            } else {
+                                Alert.alert("Увага", "Спочатку увійдіть в акаунт, щоб записатись");
+                                navigation.navigate('Login');
+                            }
+                        }}
+                    >
                         <Text style={styles.bookButtonText}>Записатись</Text>
-
                     </TouchableOpacity>
                 </TouchableOpacity>
             ))}
@@ -71,14 +120,20 @@ export default function HomeScreen({ navigation }: any) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#f5f5f5',
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingTop: 50,
+        paddingBottom: 20,
         backgroundColor: '#fff',
+    },
+    rightHeaderContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     title: {
         fontSize: 28,
@@ -86,7 +141,8 @@ const styles = StyleSheet.create({
         color: '#6d9efc',
     },
     iconButton: {
-        padding: 10,
+        marginLeft: 15,
+        padding: 5,
     },
     iconText: {
         fontSize: 28,
@@ -96,19 +152,14 @@ const styles = StyleSheet.create({
         margin: 15,
         padding: 20,
         borderRadius: 12,
-        shadowColor: 'black',
+        elevation: 3,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.1,
         shadowRadius: 4,
     },
     cardHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
         marginBottom: 10,
-    },
-    emoji: {
-        fontSize: 32,
-        marginRight: 10,
     },
     trainingName: {
         fontSize: 22,
@@ -119,15 +170,15 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: '#6d9efc',
-        marginBottom: 10,
+        marginBottom: 5,
     },
     time: {
         fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 10,
+        color: '#555',
+        marginBottom: 5,
     },
     trainerContainer: {
+        marginTop: 10,
         marginBottom: 15,
     },
     trainerLabel: {
