@@ -8,6 +8,11 @@ import MyBookingsScreen from './src/screens/MyBookingsScreen';
 import { View, Text, ActivityIndicator } from 'react-native';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+import MySubscriptionsScreen from './src/screens/MySubscriptionsScreen';
+import AvailableSubscriptionsScreen from './src/screens/AvailableSubscriptionsScreen';
+import PaymentScreen from './src/screens/PaymentScreen';
+import PaymentSuccessScreen from './src/screens/PaymentSuccessScreen';
 
 const Stack = createStackNavigator();
 
@@ -37,11 +42,24 @@ export default function App() {
           component={LoginScreen} 
           options={{ title: 'Вхід', headerLeft: () => null }} // headerLeft: () => null прибере кнопку "назад"
         />
+        <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Кабінет' }} />
         <Stack.Screen 
           name="Register" 
           component={RegisterScreen} 
           options={{ title: 'Реєстрація' }} 
         />
+        <Stack.Screen 
+          name="MySubscriptions" 
+          component={MySubscriptionsScreen} 
+          options={{ title: 'Мої абонементи' }} 
+        />
+        <Stack.Screen 
+          name="AvailableSubscriptions" 
+          component={AvailableSubscriptionsScreen} 
+          options={{ title: 'Вибір абонемента' }} 
+        />
+        <Stack.Screen name="Payment" component={PaymentScreen} options={{ title: 'Оплата' }} />
+        <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} options={{ headerShown: false }} />
         <Stack.Screen 
           name="Home" 
           component={HomeScreen} 

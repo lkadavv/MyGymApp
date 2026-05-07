@@ -23,9 +23,11 @@ export default function LoginScreen({ navigation }: any) {
 
         // КРОК 3: ПЕРЕВІРКА ПАРОЛЯ
         if (user.password === password) {
-            // Тільки тут ми пускаємо далі
-            navigation.navigate('Home', { isLoggedIn: true });
-        } else {
+            navigation.navigate('Home', { 
+                isLoggedIn: true, 
+                userEmail: user.email 
+            });
+        }else {
             setErrorMessage('Неправильний пароль!');
         }
     };

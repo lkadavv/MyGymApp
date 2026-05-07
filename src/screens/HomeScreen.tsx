@@ -12,9 +12,11 @@ import { Training } from '../Training';
 
 const trainingRepo = new TrainingRepository();
 
+
 export default function HomeScreen({ navigation, route }: any) {
     const [trainings, setTrainings] = useState<Training[]>([]);
-    
+    const userEmail = route.params?.userEmail ?? '';
+
     // Отримуємо статус авторизації з параметрів навігації
     // Якщо route.params?.isLoggedIn існує, беремо його, інакше false
     const isLoggedIn = route.params?.isLoggedIn ?? false;
@@ -60,7 +62,7 @@ export default function HomeScreen({ navigation, route }: any) {
                     {/* КНИЖКА: показується тільки якщо залогінений */}
                     {isLoggedIn && (
                         <TouchableOpacity 
-                            onPress={() => navigation.navigate('MyBookings')}
+                            onPress={() => navigation.navigate('Profile', { userEmail })} // Передаємо в Profile
                             style={styles.iconButton}
                         >
                             <Text style={styles.iconText}>📖</Text>
